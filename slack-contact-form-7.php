@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Slack Contact Form 7
- * Plugin URI: https://github.com/gedex/wp-contact-form-7
+ * Plugin Name: Slack Contact Form 7 - Switch
+ * Plugin URI: https://github.com/InnovationSwitch/wp-slack-contact-form-7
  * Description: This plugin allows you to send notifications to Slack channels whenever someone sent message through Contact Form 7.
- * Version: 0.2.0
- * Author: Akeda Bagus
- * Author URI: http://gedex.web.id
+ * Version: 0.3.0
+ * Author: Switch
+ * Author URI: https://www.innovationswitch.com
  * Text Domain: slack
  * Domain Path: /languages
  * License: GPL v2 or later
