@@ -34,42 +34,48 @@
  *
  * @filter slack_get_events
  */
-function wp_slack_wpcf7_submit( $events ) {
-	$events['wpcf7_submit'] = array(
-		// Action in Gravity Forms to hook in to get the message.
-		'action' => 'wpcf7_submit',
+ function wp_slack_wpcf7_submit( $events ) {
+ 	$events['wpcf7_submit'] = array(
+ 		// Action in Gravity Forms to hook in to get the message.
+ 		'action' => 'wpcf7_submit',
 
-		// Description appears in integration setting.
-		'description' => __( 'When someone sent message through Contact Form 7', 'slack' ),
+ 		// Description appears in integration setting.
+ 		'description' => __( 'When someone sent message through Contact Form 7', 'slack' ),
 
-		// Message to deliver to channel. Returns false will prevent
-		// notification delivery.
-		'message' => function( $form, $result ) {
+ 		// Message to deliver to channel. Returns false will prevent
+ 		// notification delivery.
+ 		'message' => function( $form, $result ) {
 
-			// @todo: Once attachment is supported in Slack
-			// we can send payload with nicely formatted message
-			// without relying on mail_sent result.
-			$sent = (
-				! empty( $result['mail_sent'] )
-				||
-				( ! empty( $result['status'] ) && 'mail_sent' === $result['status'] )
-			);
+ 			// @todo: Once attachment is supported in Slack
+ 			// we can send payload with nicely formatted message
+ 			// without relying on mail_sent result.
 
-			if ( $sent ) {
-				return apply_filters( 'slack_wpcf7_submit_message',
-					sprintf(
-						__( 'Someone just sent a message through *%s* _Contact Form 7_. Check your email!', 'slack' ),
-						is_callable( array( $form, 'title' ) ) ? $form->title() : $form->title
-					),
-					$form,
-					$result
-				);
-			}
+ 			$submission = WPCF7_Submission::get_instance();
+ 			$data =& $submission->get_posted_data();
+ 			error_log( print_r( $data, true ) );
 
-			return false;
-		}
-	);
 
-	return $events;
-}
+ 			$sent = (
+ 				! empty( $result['mail_sent'] )
+ 				||
+ 				( ! empty( $result['status'] ) && 'mail_sent' === $result['status'] )
+ 			);
+
+ 			if ( $sent ) {
+ 				return apply_filters( 'slack_wpcf7_submit_message',
+ 					sprintf(
+ 						__( "Someone just sent a message through *Switch Website Contact*. Check your email!\n*Name:* ".$data['your-name']."\n*Email:* ".$data['your-email']."\n*Subject:* ".$data['your-subject']."\n*Company:* ".$data['your-company']."\n*Message:* ".$data['your-message']."\n*Reference:* ".$data['your-reference'], 'slack' ),
+ 						is_callable( array( $form, 'title' ) ) ? $form->title() : $form->title
+ 					),
+ 					$form,
+ 					$result
+ 				);
+ 			}
+
+ 			return false;
+ 		}
+ 	);
+
+ 	return $events;
+ }
 add_filter( 'slack_get_events', 'wp_slack_wpcf7_submit' );
